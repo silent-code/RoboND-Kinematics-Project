@@ -1,7 +1,15 @@
-from sympy import *
 from time import time
 from mpmath import radians
+import numpy as np
+import rospy
+from numpy import array
+from sympy import symbols, cos, sin, pi, simplify, sqrt, atan2, acos, asin
+from sympy.matrices import Matrix
 import tf
+from kuka_arm.srv import *
+from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
+from geometry_msgs.msg import Pose
+#from mpmath import *
 
 '''
 Format of test case is [ [[EE position],[EE orientation as quaternions]],[WC location],[joint angles]]
@@ -22,7 +30,10 @@ test_cases = {1:[[[2.16135,-1.42635,1.55109],
                   [0.01735,-0.2179,0.9025,0.371016]],
                   [-1.1669,-0.17989,0.85137],
                   [-2.99,-0.12,0.94,4.06,1.29,-4.12]],
-              4:[],
+              4:[[[2.0429,0,1.9465],
+                  [0,0,0,1]],
+                 [1.8499, 0, 1.9464],
+                  [0,0,0,0,0,0]],
               5:[]}
 
 
@@ -60,33 +71,174 @@ def test_code(test_case):
     start_time = time()
     
     ########################################################################################
-    ## 
+    ## Begin IK code
+    q1, q2, q3, q4, q5, q6, q7 = symbols('q1:8')  # theta(i)
+    d1, d2, d3, d4, d5, d6, d7 = symbols('d1:8')  # d(i)
+    a0, a1, a2, a3, a4, a5, a6 = symbols('a0:7')  # a(i-1)
+    alpha0, alpha1, alpha2, alpha3, alpha4, alpha5, alpha6 = symbols('alpha0:7')  # alpha(i-1)
 
-    ## Insert IK code here!
-    
-    theta1 = 0
-    theta2 = 0
-    theta3 = 0
-    theta4 = 0
-    theta5 = 0
-    theta6 = 0
+    # DH parameters for KUKA KR210
+    #
+    s = {alpha0: 0, a0: 0, d1: 0.75, q1: q1,
+         alpha1: -pi / 2., a1: .35, d2: 0, q2: q2 - pi / 2.,
+         alpha2: 0, a2: 1.25, d3: 0, q3: q3,
+         alpha3: -pi / 2., a3: -0.054, d4: 1.50, q4: q4,
+         alpha4: pi / 2., a4: 0, d5: 0, q5: q5,
+         alpha5: -pi / .2, a5: 0, d6: 0, q6: q6,
+         alpha6: 0, a6: 0, d7: 0.303, q7: 0}
 
+    # Create individual transformation matrices
+    def TF_Matrix(alpha, a, q, d):
+        TF = Matrix([[cos(q), -sin(q), 0, a],
+                     [sin(q) * cos(alpha), cos(q) * cos(alpha), -sin(alpha), -sin(alpha) * d],
+                     [sin(q) * sin(alpha), cos(q) * sin(alpha), cos(alpha), cos(alpha) * d],
+                     [0, 0, 0, 1]])
+        return TF
+
+    T0_1 = TF_Matrix(alpha0, a0, q1, d1).subs(s)
+    T1_2 = TF_Matrix(alpha1, a1, q2, d2).subs(s)
+    T2_3 = TF_Matrix(alpha2, a2, q3, d3).subs(s)
+    T3_4 = TF_Matrix(alpha3, a3, q4, d4).subs(s)
+    T4_5 = TF_Matrix(alpha4, a4, q5, d5).subs(s)
+    T5_6 = TF_Matrix(alpha5, a5, q6, d6).subs(s)
+    T6_ee = TF_Matrix(alpha6, a6, q7, d7).subs(s)
+
+    # Composition of transformation matrices
+    #
+    T0_2 = simplify(T0_1 * T1_2)
+    T0_3 = simplify(T0_2 * T2_3)
+    T0_4 = simplify(T0_3 * T3_4)
+    T0_5 = simplify(T0_4 * T4_5)
+    T0_6 = simplify(T0_5 * T5_6)
+    # Initialize service response
+    joint_trajectory_list = []
+    for x in xrange(0, len(req.poses)):
+        # IK code starts here
+        joint_trajectory_point = JointTrajectoryPoint()
+
+        # Extract end-effector position and orientation from request
+        # px,py,pz = end-effector position
+        # roll, pitch, yaw = end-effector orientation
+        px = req.poses[x].position.x
+        py = req.poses[x].position.y
+        pz = req.poses[x].position.z
+
+        (roll, pitch, yaw) = tf.transformations.euler_from_quaternion(
+            [req.poses[x].orientation.x, req.poses[x].orientation.y,
+             req.poses[x].orientation.z, req.poses[x].orientation.w])
+
+        ### Your IK code here
+        # Find ee rotation matrix
+        # Define RPY rotation matrices
+        r, p, y = symbols('r p y')
+        Rot_x = Matrix([[1, 0, 0],
+                        [0, cos(r), -sin(r)],
+                        [0, sin(r), cos(r)]])
+
+        Rot_y = Matrix([[cos(p), 0, sin(p)],
+                        [0, 1, 0],
+                        [-sin(p), 0, cos(p)]])
+
+        Rot_z = Matrix([[cos(y), -sin(y), 0],
+                        [sin(y), cos(y), 0],
+                        [0, 0, 1]])
+
+        Rot_ee = Rot_z * Rot_y * Rot_x
+        # Now compute ee correction rotation
+        Rot_corr = Rot_z.subs(y, radians(180)) * Rot_y.subs(p, radians(-90))
+        Rot_ee = Rot_ee * Rot_corr
+        Rot_ee = Rot_ee.subs({'r': roll, 'p': pitch, 'y': yaw})
+        EE = Matrix([[px], [py], [pz]])
+        WC = EE - .303 * Rot_ee[:, 2]
+
+        # Calculate joint angles using Geometric IK method
+        #
+        theta1 = atan2(WC[1], WC[0])
+        side_a = 1.5
+        side_b = sqrt(pow((sqrt(WC[0] * WC[0] + WC[1] * WC[1]) - .35), 2) + pow((WC[2] - .75), 2))
+        side_c = 1.25
+        angle_a = acos((side_b * side_b + side_c * side_c - side_a * side_a) / (2 * side_b * side_c))
+        angle_b = acos((side_a * side_a + side_c * side_c - side_b * side_b) / (2 * side_a * side_c))
+        angle_c = acos((side_a * side_a + side_b * side_b - side_c * side_c) / (2 * side_a * side_b))
+        theta2 = pi / 2 - angle_a - atan2(WC[2] - .75, sqrt(WC[0] * WC[0] + WC[1] * WC[1]) - .35)
+        theta3 = pi / 2 - (angle_b + .036)
+        R0_3 = T0_1[0:3, 0:3] * T1_2[0:3, 0:3] * T2_3[0:3, 0:3]
+        R0_3 = R0_3.evalf(subs={q1: theta1, q2: theta2})
+        R3_6 = R0_3.inv("LU") * Rot_ee
+        theta4 = atan2(R3_6[2, 2], -R3_6[0, 2])
+        theta5 = atan2(sqrt(R3_6[0, 2] * R3_6[0, 2] + R3_6[2, 2] * R3_6[2, 2]), R3_6[1, 2])
+        theta6 = atan2(-R3_6[1, 1], R3_6[1, 0])
     ## 
     ########################################################################################
     
     ########################################################################################
     ## For additional debugging add your forward kinematics here. Use your previously calculated thetas
     ## as the input and output the position of your end effector as your_ee = [x,y,z]
+    # Create symbols
+    #
+    #
+    q1, q2, q3, q4, q5, q6, q7 = symbols('q1:8')  # theta(i)
+    d1, d2, d3, d4, d5, d6, d7 = symbols('d1:8')  # d(i)
+    a0, a1, a2, a3, a4, a5, a6 = symbols('a0:7')  # a(i-1)
+    alpha0, alpha1, alpha2, alpha3, alpha4, alpha5, alpha6 = symbols('alpha0:7')  # alpha(i-1)
 
-    ## (OPTIONAL) YOUR CODE HERE!
+    # DH parameters for KUKA KR210
+    #
+    s = {alpha0: 0, a0: 0, d1: 0.75, q1: test_case[2][0],
+         alpha1: -pi / 2., a1: .35, d2: 0, q2: test_case[2][1] - pi / 2.,
+         alpha2: 0, a2: 1.25, d3: 0, q3: test_case[2][2],
+         alpha3: -pi / 2., a3: -0.054, d4: 1.50, q4: test_case[2][3],
+         alpha4: pi / 2., a4: 0, d5: 0, q5: test_case[2][4],
+         alpha5: -pi / .2, a5: 0, d6: 0, q6: test_case[2][5],
+         alpha6: 0, a6: 0, d7: 0.303, q7: 0}
 
-    ## End your code input for forward kinematics here!
+    # Create individual transformation matrices
+    def TF_Matrix(alpha, a, q, d):
+        TF = Matrix([[cos(q), -sin(q), 0, a],
+                     [sin(q) * cos(alpha), cos(q) * cos(alpha), -sin(alpha), -sin(alpha) * d],
+                     [sin(q) * sin(alpha), cos(q) * sin(alpha), cos(alpha), cos(alpha) * d],
+                     [0, 0, 0, 1]])
+        return TF
+
+    T0_1 = TF_Matrix(alpha0, a0, q1, d1).subs(s)
+    T1_2 = TF_Matrix(alpha1, a1, q2, d2).subs(s)
+    T2_3 = TF_Matrix(alpha2, a2, q3, d3).subs(s)
+    T3_4 = TF_Matrix(alpha3, a3, q4, d4).subs(s)
+    T4_5 = TF_Matrix(alpha4, a4, q5, d5).subs(s)
+    T5_6 = TF_Matrix(alpha5, a5, q6, d6).subs(s)
+    T6_ee = TF_Matrix(alpha6, a6, q7, d7).subs(s)
+
+    # Composition of transformation matrices
+    #
+    T0_2 = simplify(T0_1 * T1_2)
+    T0_3 = simplify(T0_2 * T2_3)
+    T0_4 = simplify(T0_3 * T3_4)
+    T0_5 = simplify(T0_4 * T4_5)
+    T0_6 = simplify(T0_5 * T5_6)
+    T0_ee = simplify(T0_6 * T6_ee)
+    # Define end effector Correction Transformation matrices
+    #
+    T_ee_z = Matrix([[cos(pi), -sin(pi), 0, 0],
+                     [sin(pi), cos(pi), 0, 0],
+                     [0, 0, 1, 0],
+                     [0, 0, 0, 1]])
+    T_ee_y = Matrix([[cos(-pi / 2), 0, sin(-pi / 2), 0],
+                     [0, 1, 0, 0],
+                     [-sin(-pi / 2), 0, cos(-pi / 2), 0],
+                     [0, 0, 0, 1]])
+    T_ee_corr = simplify(T_ee_z * T_ee_y)
+
+    # Total homogeneous transform b/w base link and grip link with orientation correction:
+    #
+    T0_ee = simplify(T0_ee * T_ee_corr)
     ########################################################################################
 
     ## For error analysis please set the following variables of your WC location and EE location in the format of [x,y,z]
-    your_wc = [1,1,1] # <--- Load your calculated WC values in this array
-    your_ee = [1,1,1] # <--- Load your calculated end effector value from your forward kinematics
+    your_wc = [T0_5[0, 3], T0_5[1, 3], T0_5[2, 3]]  # <--- WC joint location from fwd kinematics
+    your_ee = [T0_ee[0, 3], T0_ee[1, 3], T0_ee[2, 3]]  # <--- End effector location from fwd kinematics
     ########################################################################################
+
+
 
     ## Error analysis
     print ("\nTotal run time to calculate joint angles from pose is %04.4f seconds" % (time()-start_time))
@@ -101,6 +253,7 @@ def test_code(test_case):
         print ("Wrist error for y position is: %04.8f" % wc_y_e)
         print ("Wrist error for z position is: %04.8f" % wc_z_e)
         print ("Overall wrist offset is: %04.8f units" % wc_offset)
+        print ("your wc position: ", your_wc[0], your_wc[1], your_wc[2])
 
     # Find theta errors
     t_1_e = abs(theta1-test_case[2][0])
@@ -136,6 +289,6 @@ def test_code(test_case):
 
 if __name__ == "__main__":
     # Change test case number for different scenarios
-    test_case_number = 1
+    test_case_number = 2
 
     test_code(test_cases[test_case_number])
