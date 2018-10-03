@@ -86,7 +86,7 @@ def test_code(test_case):
          alpha4: pi / 2., a4: 0, d5: 0, q5: q5,
          alpha5: -pi / .2, a5: 0, d6: 0, q6: q6,
          alpha6: 0, a6: 0, d7: 0.303, q7: 0}
-
+    print('DH params done')
     # Create individual transformation matrices
     def TF_Matrix(alpha, a, q, d):
         TF = Matrix([[cos(q), -sin(q), 0, a],
@@ -102,17 +102,20 @@ def test_code(test_case):
     T4_5 = TF_Matrix(alpha4, a4, q5, d5).subs(s)
     T5_6 = TF_Matrix(alpha5, a5, q6, d6).subs(s)
     T6_ee = TF_Matrix(alpha6, a6, q7, d7).subs(s)
-
+    print('TF matrices done')
     # Composition of transformation matrices
     #
-    T0_2 = simplify(T0_1 * T1_2)
-    T0_3 = simplify(T0_2 * T2_3)
-    T0_4 = simplify(T0_3 * T3_4)
-    T0_5 = simplify(T0_4 * T4_5)
-    T0_6 = simplify(T0_5 * T5_6)
+    T0_2 = (T0_1 * T1_2)
+    T0_3 = (T0_2 * T2_3)
+    T0_4 = (T0_3 * T3_4)
+    T0_5 = (T0_4 * T4_5)
+    #T0_6 = (T0_5 * T5_6)
+    print('Homogeneous tf calcs done')
+
     # Initialize service response
     joint_trajectory_list = []
     for x in xrange(0, len(req.poses)):
+        print('number of poses to check: ', len(req.poses))
         # IK code starts here
         joint_trajectory_point = JointTrajectoryPoint()
 
@@ -126,8 +129,7 @@ def test_code(test_case):
         (roll, pitch, yaw) = tf.transformations.euler_from_quaternion(
             [req.poses[x].orientation.x, req.poses[x].orientation.y,
              req.poses[x].orientation.z, req.poses[x].orientation.w])
-
-        ### Your IK code here
+        print('Position and orientation calcs done')
         # Find ee rotation matrix
         # Define RPY rotation matrices
         r, p, y = symbols('r p y')
@@ -150,9 +152,10 @@ def test_code(test_case):
         Rot_ee = Rot_ee.subs({'r': roll, 'p': pitch, 'y': yaw})
         EE = Matrix([[px], [py], [pz]])
         WC = EE - .303 * Rot_ee[:, 2]
-
+        print('WC calc done')
         # Calculate joint angles using Geometric IK method
         #
+        print('Computing joint angles ...')
         theta1 = atan2(WC[1], WC[0])
         side_a = 1.5
         side_b = sqrt(pow((sqrt(WC[0] * WC[0] + WC[1] * WC[1]) - .35), 2) + pow((WC[2] - .75), 2))
@@ -163,11 +166,13 @@ def test_code(test_case):
         theta2 = pi / 2 - angle_a - atan2(WC[2] - .75, sqrt(WC[0] * WC[0] + WC[1] * WC[1]) - .35)
         theta3 = pi / 2 - (angle_b + .036)
         R0_3 = T0_1[0:3, 0:3] * T1_2[0:3, 0:3] * T2_3[0:3, 0:3]
-        R0_3 = R0_3.evalf(subs={q1: theta1, q2: theta2})
+        R0_3 = R0_3.evalf(subs={q1: theta1, q2: theta2, q3: theta3})
+        print('Computing inverse ...')
         R3_6 = R0_3.inv("LU") * Rot_ee
         theta4 = atan2(R3_6[2, 2], -R3_6[0, 2])
         theta5 = atan2(sqrt(R3_6[0, 2] * R3_6[0, 2] + R3_6[2, 2] * R3_6[2, 2]), R3_6[1, 2])
         theta6 = atan2(-R3_6[1, 1], R3_6[1, 0])
+        print('Joint angle calcs done')
     ## 
     ########################################################################################
     
@@ -177,6 +182,7 @@ def test_code(test_case):
     # Create symbols
     #
     #
+    print('Checking FK calcs ...')
     q1, q2, q3, q4, q5, q6, q7 = symbols('q1:8')  # theta(i)
     d1, d2, d3, d4, d5, d6, d7 = symbols('d1:8')  # d(i)
     a0, a1, a2, a3, a4, a5, a6 = symbols('a0:7')  # a(i-1)
@@ -184,12 +190,12 @@ def test_code(test_case):
 
     # DH parameters for KUKA KR210
     #
-    s = {alpha0: 0, a0: 0, d1: 0.75, q1: test_case[2][0],
-         alpha1: -pi / 2., a1: .35, d2: 0, q2: test_case[2][1] - pi / 2.,
-         alpha2: 0, a2: 1.25, d3: 0, q3: test_case[2][2],
-         alpha3: -pi / 2., a3: -0.054, d4: 1.50, q4: test_case[2][3],
-         alpha4: pi / 2., a4: 0, d5: 0, q5: test_case[2][4],
-         alpha5: -pi / .2, a5: 0, d6: 0, q6: test_case[2][5],
+    s = {alpha0: 0, a0: 0, d1: 0.75, q1: theta1,
+         alpha1: -pi / 2., a1: .35, d2: 0, q2: theta2 - pi / 2.,
+         alpha2: 0, a2: 1.25, d3: 0, q3: theta3,
+         alpha3: -pi / 2., a3: -0.054, d4: 1.50, q4: theta4,
+         alpha4: pi / 2., a4: 0, d5: 0, q5: theta5,
+         alpha5: -pi / .2, a5: 0, d6: 0, q6: theta6,
          alpha6: 0, a6: 0, d7: 0.303, q7: 0}
 
     # Create individual transformation matrices
@@ -210,12 +216,13 @@ def test_code(test_case):
 
     # Composition of transformation matrices
     #
-    T0_2 = simplify(T0_1 * T1_2)
-    T0_3 = simplify(T0_2 * T2_3)
-    T0_4 = simplify(T0_3 * T3_4)
-    T0_5 = simplify(T0_4 * T4_5)
-    T0_6 = simplify(T0_5 * T5_6)
-    T0_ee = simplify(T0_6 * T6_ee)
+    T0_2 = (T0_1 * T1_2)
+    T0_3 = (T0_2 * T2_3)
+    T0_4 = (T0_3 * T3_4)
+    T0_5 = (T0_4 * T4_5)
+    T0_6 = (T0_5 * T5_6)
+    T0_ee = (T0_6 * T6_ee)
+    my_ee = T0_ee
     # Define end effector Correction Transformation matrices
     #
     T_ee_z = Matrix([[cos(pi), -sin(pi), 0, 0],
@@ -226,16 +233,16 @@ def test_code(test_case):
                      [0, 1, 0, 0],
                      [-sin(-pi / 2), 0, cos(-pi / 2), 0],
                      [0, 0, 0, 1]])
-    T_ee_corr = simplify(T_ee_z * T_ee_y)
+    T_ee_corr = (T_ee_z * T_ee_y)
 
     # Total homogeneous transform b/w base link and grip link with orientation correction:
     #
-    T0_ee = simplify(T0_ee * T_ee_corr)
+    T0_ee = (T0_ee * T_ee_corr)
     ########################################################################################
 
     ## For error analysis please set the following variables of your WC location and EE location in the format of [x,y,z]
     your_wc = [T0_5[0, 3], T0_5[1, 3], T0_5[2, 3]]  # <--- WC joint location from fwd kinematics
-    your_ee = [T0_ee[0, 3], T0_ee[1, 3], T0_ee[2, 3]]  # <--- End effector location from fwd kinematics
+    your_ee = [my_ee[0, 3], my_ee[1, 3], my_ee[2, 3]]  # <--- End effector location from fwd kinematics
     ########################################################################################
 
 
@@ -289,6 +296,6 @@ def test_code(test_case):
 
 if __name__ == "__main__":
     # Change test case number for different scenarios
-    test_case_number = 2
+    test_case_number = 1
 
     test_code(test_cases[test_case_number])

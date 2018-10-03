@@ -9,7 +9,26 @@ git remote add origin https://github.com/silent-code/RoboND-Kinematics-Project.g
 git config master.remote origin
 git config master.merge refs/heads/master
 git push -u origin master
+git config --global user.email "askyjetblack@gmail.com"
+git config --global user.name "silent-code"
 
 At this point you will have exact copy of their repo. To include your new changes:
 
+git add --all
+git commit -m "your comments here"
+git push
 
+If you edit the writeup mark down file using the Github editor and commit changes, you will need to pull it locally before pushing changes to the repo:
+
+git pull
+
+
+To create new repo from scratch on Github:
+
+1) From menu, Add Repository - NOTE: Don't specify create ReadMe's etc
+3) In your local directory: 
+git init
+git add .
+git commit -m "First Commit"
+git remote add origin https://github.com/silent-code/new_repo_name.git
+git push origin master
