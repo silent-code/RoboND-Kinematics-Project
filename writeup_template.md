@@ -4,7 +4,7 @@ This projected demonstrated that we could do math from the 1980s.
 [//]: # (Image References)
 
 [image1]: ./misc_images/robond-picknplace-gazebo-screencap.png
-[image2]: ./misc_kuka_arm_annotated.png
+[image2]: ./misc_images/kuka_arm_annotated.png
 [image3]: ./misc_images/misc3.png
 The following is a screen cap of the arm placing an object in the basket.
 ![alt text][image1]
@@ -14,11 +14,11 @@ The following is a screen cap of the arm placing an object in the basket.
 
 Here is an example of how to include an image in your writeup.
 
-![alt text][image2]
+
 
 #### 2. Using the DH parameter table you derived earlier, create individual transformation matrices about each joint. In addition, also generate a generalized homogeneous transform between base_link and gripper_link using only end-effector(gripper) pose.
 
-
+![alt text][image2]
 
 Links | alpha(i-1) | a(i-1) | d(i-1) | theta(i)
 --- | --- | --- | --- | ---
