@@ -22,38 +22,38 @@ Links | alpha(i-1) | a(i-1) | d(i-1) | theta(i)
 
 T0_1 = [[cos(q1) -sin(q1) 0 0] <br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[sin(q1) cos(q1) 0 0] <br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[0 0 1 0.75] <br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[0 0 0 1]]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[0 0 1 0.75] <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[0 0 0 1]]
  
 T1_2 = [[cos(q2 - 0.5*pi) -sin(q2 - 0.5*pi) 0 0.35] <br>
-       [0 0 1 0] <br>
-       [-sin(q2 - 0.5*pi) -cos(q2 - 0.5*pi) 0 0] <br>
-       [0 0 0 1]]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;       [0 0 1 0] <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;       [-sin(q2 - 0.5*pi) -cos(q2 - 0.5*pi) 0 0] <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;       [0 0 0 1]]
 
 T2_3 = [[cos(q3) -sin(q3) 0 1.25] <br>
-       [sin(q3) cos(q3) 0 0] <br>
-       [0 0 1 0] <br>
-       [0 0 0 1]]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;       [sin(q3) cos(q3) 0 0] <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;       [0 0 1 0] <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;       [0 0 0 1]]
  
 T3_4 = [[cos(q4) -sin(q4) 0 -0.054] <br>
-       [0 0 1 1.5] <br>
-       [-sin(q4) -cos(q4) 0 0] <br>
-       [0 0 0 1]]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;       [0 0 1 1.5] <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;       [-sin(q4) -cos(q4) 0 0] <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;       [0 0 0 1]]
  
 T4_5 = [[cos(q5) -sin(q5) 0 0] <br>
-       [0 0 -1 0] <br>
-       [sin(q5) cos(q5) 0 0] <br>
-       [0 0 0 1]]
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;      [0 0 -1 0] <br>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;      [sin(q5) cos(q5) 0 0] <br>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;      [0 0 0 1]]
  
 T5_6 = [[cos(q6) -sin(q6) 0 0] <br>
-       [-sin(q6) -cos(q6) 0 0] <br>
-       [0 0 -1 0] <br>
-       [0 0 0 1]]
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;      [-sin(q6) -cos(q6) 0 0] <br>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;      [0 0 -1 0] <br>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;      [0 0 0 1]]
  
 T6_Grip = [[1 0 0 0] <br>
-          [0 1 0 0] <br>
-          [0 0 1 0.303] <br>
-          [0 0 0 1]]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;          [0 1 0 0] <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;          [0 0 1 0.303] <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;          [0 0 0 1]]
  
 #### 3. Decouple Inverse Kinematics problem into Inverse Position Kinematics and inverse Orientation Kinematics; doing so derive the equations to calculate all individual joint angles.
 
