@@ -1,14 +1,24 @@
 ## Project: Kinematics Pick & Place
 This projected demonstrated that we could do math from the 1980s.
 
+[//]: # (Image References)
+
+[image1]: ./misc_images/robond-picknplace-gazebo-screencap.png
+[image2]: ./misc_kuka_arm_annotated.png
+[image3]: ./misc_images/misc3.png
+The following is a screen cap of the arm placing an object in the basket.
+![alt text][image1]
+
 ### Kinematic Analysis
 #### 1. Run the forward_kinematics demo and evaluate the kr210.urdf.xacro file to perform kinematic analysis of Kuka KR210 robot and derive its DH parameters.
 
 Here is an example of how to include an image in your writeup.
 
-![alt text][image1]
+![alt text][image2]
 
 #### 2. Using the DH parameter table you derived earlier, create individual transformation matrices about each joint. In addition, also generate a generalized homogeneous transform between base_link and gripper_link using only end-effector(gripper) pose.
+
+
 
 Links | alpha(i-1) | a(i-1) | d(i-1) | theta(i)
 --- | --- | --- | --- | ---
@@ -59,7 +69,7 @@ T6_Grip = [[1 0 0 0] <br>
 
 And here's where you can draw out and show your math for the derivation of your theta angles. 
 
-![alt text][image2]
+![alt text][image3]
 
 ### Project Implementation
 
@@ -70,6 +80,6 @@ Here I'll talk about the code, what techniques I used, what worked and why, wher
 
 
 And just for fun, another example image:
-![alt text][image3]
+![alt text][image4]
 
 
