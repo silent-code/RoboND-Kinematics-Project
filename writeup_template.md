@@ -1,5 +1,5 @@
 ## Project: Kinematics Pick & Place
-This project demonstrated that we could do math from the 1980s.
+The Kinematics Pick and Place project introduced python0-based programming within the Robotic Operating System (ROS) environment and the use of the Kuka KR210 serial manipulator simulator to demonstrate basic forward and inverse kinmatic concepts. The next image is a screen capture of the simulation during the actual testing stage of the project, showing the robotic manipulator successfully placing the object into the target bin.
 
 [//]: # (Image References)
 
