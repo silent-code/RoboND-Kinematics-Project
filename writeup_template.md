@@ -72,7 +72,33 @@ First we needed to obtain the location of the wrist center position [WCx, WCy, W
 ![alt text][image4]
 
 Once we have the wrist center position it is fairly straight forward to derive the first three joint angles. Once those are obtained, one can use 
+
 ![alt text][image3]
+
+To calculate the final three joint angles we use the fact that the Grip rotation matrix with respect to the base, Rot_ee, is equal to the matrix composition R0_3 * R3_6. Thus
+
+R3_6 = R0_3.inv("LU") * Rot_ee
+
+The above right hand side is a numerical 3 x 3 matrix. Since the left hand side contains the final three joint variables we can use these equations to solve for them. One can use the debug code with the following code to print out and solve for the joint variables 4-6. For example equating the [1, 1]-element: 
+
+T3_6 = T3_4 * T4_5 * T5_6
+R3_6 = T3_6[0:3, 0:3]
+R3_6_sym = simplify(R3_6.T * Rot_ee_symbol)
+R3_6_sym = R3_6_sym.subs({'r': roll, 'p': pitch, 'y': yaw})
+print(np.matrix(R3_6_sym[1,1]))
+R0_3 = R0_3.evalf(subs={q1: theta1, q2: theta2, q3: theta3})
+R3_6 = R0_3.inv("LU") * Rot_ee
+print(np.matrix(R3_6[1,1]))
+
+Yields:
+
+-0.332 = 0.879 * sin(theta4) * sin(theta5 - theta6) - 0.473 * sin(theta5 - theta6) * cos(theta4) - 0.054 * cos(theta5 - theta6)
+
+The final equations in python are:
+
+theta4 = atan2(R3_6[2, 2], -R3_6[0, 2])
+theta5 = atan2(sqrt(R3_6[0, 2] * R3_6[0, 2] + R3_6[2, 2] * R3_6[2, 2]), R3_6[1, 2])
+theta6 = atan2(-R3_6[1, 1], R3_6[1, 0])
 
 ### Project Implementation
 
