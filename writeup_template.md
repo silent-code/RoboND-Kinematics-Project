@@ -73,7 +73,7 @@ First we needed to obtain the location of the wrist center position [WCx, WCy, W
 
 ![alt text][image4]
 
-Once we have the wrist center position it is fairly straight forward to derive the first three joint angles. The next diagram shows the pertinent robot geometry between the base and Grip (EE). 
+Once we have the wrist center position it is fairly straight forward to derive the first three joint angles. The next diagram shows the pertinent robot geometry between the base and wrist center (WC). 
 
 ![alt text][image3]
 
@@ -98,8 +98,8 @@ Yields the equation:
 
 The final equations in python are:
 
-theta4 = atan2(R3_6[2, 2], -R3_6[0, 2])
-theta5 = atan2(sqrt(R3_6[0, 2] * R3_6[0, 2] + R3_6[2, 2] * R3_6[2, 2]), R3_6[1, 2])
+theta4 = atan2(R3_6[2, 2], -R3_6[0, 2])<br>
+theta5 = atan2(sqrt(R3_6[0, 2] * R3_6[0, 2] + R3_6[2, 2] * R3_6[2, 2]), R3_6[1, 2])<br>
 theta6 = atan2(-R3_6[1, 1], R3_6[1, 0])
 
 ### Project Implementation
