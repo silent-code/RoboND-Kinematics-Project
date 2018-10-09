@@ -15,9 +15,6 @@ The following is a screen cap of the arm placing an object in the basket.
 Here is an example of how to include an image in your writeup.
 
 
-
-#### 2. Using the DH parameter table you derived earlier, create individual transformation matrices about each joint. In addition, also generate a generalized homogeneous transform between base_link and gripper_link using only end-effector(gripper) pose.
-
 ![alt text][image2]
 
 Links | alpha(i-1) | a(i-1) | d(i-1) | theta(i)
@@ -29,6 +26,8 @@ Links | alpha(i-1) | a(i-1) | d(i-1) | theta(i)
 4->5 | 0 | 0 | 0 | 0
 5->6 | 0 | 0 | 0 | 0
 6->EE | 0 | 0 | 0 | 0
+
+#### 2. Using the DH parameter table you derived earlier, create individual transformation matrices about each joint. In addition, also generate a generalized homogeneous transform between base_link and gripper_link using only end-effector(gripper) pose.
 
 T0_1 = [[cos(q1) -sin(q1) 0 0] <br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[sin(q1) cos(q1) 0 0] <br>
