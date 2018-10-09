@@ -5,7 +5,8 @@ This project demonstrated that we could do math from the 1980s.
 
 [image1]: ./misc_images/robond-picknplace-gazebo-screencap.png
 [image2]: ./misc_images/kuka_arm_annotated.png
-[image3]: ./misc_images/misc3.png
+[image3]: ./misc_images/rse_proj2_eqtns1.png
+[image4]: ./misc_images/rse_proj2_eqtns2.png
 The following is a screen cap of the arm placing an object in the basket.
 ![alt text][image1]
 
