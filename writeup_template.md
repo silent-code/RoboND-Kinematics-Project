@@ -1,22 +1,24 @@
-## Project: Kinematics Pick & Place
-The Kinematics Pick and Place project introduced python0-based programming within the Robotic Operating System (ROS) environment and the use of the Kuka KR210 serial manipulator simulator to demonstrate basic forward and inverse kinmatic concepts. The next image is a screen capture of the simulation during the actual testing stage of the project, showing the robotic manipulator successfully placing the object into the target bin.
-
 [//]: # (Image References)
 
 [image1]: ./misc_images/robond-picknplace-gazebo-screencap.png
 [image2]: ./misc_images/kuka_arm_annotated.png
 [image3]: ./misc_images/rse_proj2_eqtns1.png
 [image4]: ./misc_images/rse_proj2_eqtns2.png
-The following is a screen cap of the arm placing an object in the basket.
+
+## Project: Kinematics Pick & Place
+The Kinematics Pick and Place project introduced python-based programming within the Robotic Operating System (ROS) environment and the use of the Kuka KR210 serial manipulator simulator to demonstrate basic forward and inverse kinematic concepts. The next image is a screen capture of the simulation during the actual testing stage of the project, showing the robotic manipulator successfully placing the object into the target bin.
+
 ![alt text][image1]
 
 ### Kinematic Analysis
-#### 1. Run the forward_kinematics demo and evaluate the kr210.urdf.xacro file to perform kinematic analysis of Kuka KR210 robot and derive its DH parameters.
+#### 1. The first objective was to run the forward_kinematics demo and evaluate the kr210.urdf file to perform kinematic analysis of Kuka KR210 robot and derive its DH parameters.
 
-Here is an example of how to include an image in your writeup.
+The following annotated image shows the relevant DH parameters, joint angle directions and coordinate system axes.
 
 
 ![alt text][image2]
+
+The DH table is shown next and is derived according the DH rules. Once the robot diagram is correctly annotated, the DH table follows in a straight forward manner. Note that one has to accound for the differences between the DH rules and the urdf file specification. This was a little difficult to grasp at first, but carefully following the lesson description was helpful.
 
 Links | alpha(i-1) | a(i-1) | d(i-1) | theta(i)
 --- | --- | --- | --- | ---
@@ -28,7 +30,7 @@ Links | alpha(i-1) | a(i-1) | d(i-1) | theta(i)
 5->6 | -90 | 0 | 0 | q6
 6->EE | 0 | 0 | .303 | 0
 
-#### 2. Using the DH parameter above, we can create individual transformation matrices about each joint. The individual joint transforms with the DH parameter substitutions are as follows:
+#### 2. Using the DH parameters above, we can create individual transformation matrices about each joint. The individual joint transforms with the DH parameter substitutions are as follows:
 
 T0_1 = [[cos(q1) -sin(q1) 0 0] <br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[sin(q1) cos(q1) 0 0] <br>
@@ -71,7 +73,7 @@ First we needed to obtain the location of the wrist center position [WCx, WCy, W
 
 ![alt text][image4]
 
-Once we have the wrist center position it is fairly straight forward to derive the first three joint angles. Once those are obtained, one can use 
+Once we have the wrist center position it is fairly straight forward to derive the first three joint angles. The next diagram shows the pertinent robot geometry between the base and Grip (EE). 
 
 ![alt text][image3]
 
@@ -79,7 +81,7 @@ To calculate the final three joint angles we use the fact that the Grip rotation
 
 R3_6 = R0_3.inv("LU") * Rot_ee
 
-The above right hand side is a numerical 3 x 3 matrix. Since the left hand side contains the final three joint variables we can use these equations to solve for them. One can use the debug code with the following code to print out and solve for the joint variables 4-6. For example equating the [1, 1]-element: 
+The above right hand side is a numerical 3 x 3 matrix since the first three joint angles are known (i.e., we can numerically compute R0_3) and we can compute Rot_ee given the robot Grip orientation. Since the left hand side contains the final three joint variables we can use these equations to solve for them numericallhy. One can use the IK_debug.py with the following code added to print out and solve for the joint variables 4-6. For example equating the [1, 1]-element: 
 
 T3_6 = T3_4 * T4_5 * T5_6
 R3_6 = T3_6[0:3, 0:3]
@@ -90,7 +92,7 @@ R0_3 = R0_3.evalf(subs={q1: theta1, q2: theta2, q3: theta3})
 R3_6 = R0_3.inv("LU") * Rot_ee
 print(np.matrix(R3_6[1,1]))
 
-Yields:
+Yields the equation:
 
 -0.332 = 0.879 * sin(theta4) * sin(theta5 - theta6) - 0.473 * sin(theta5 - theta6) * cos(theta4) - 0.054 * cos(theta5 - theta6)
 
