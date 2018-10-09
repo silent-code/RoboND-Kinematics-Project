@@ -83,14 +83,14 @@ R3_6 = R0_3.inv("LU") * Rot_ee
 
 The above right hand side is a numerical 3 x 3 matrix since the first three joint angles are known (i.e., we can numerically compute R0_3) and we can compute Rot_ee given the robot Grip orientation. Since the left hand side contains the final three joint variables we can use these equations to solve for them numericallhy. One can use the IK_debug.py with the following code added to print out and solve for the joint variables 4-6. For example equating the [1, 1]-element: 
 
-T3_6 = T3_4 * T4_5 * T5_6
-R3_6 = T3_6[0:3, 0:3]
-R3_6_sym = simplify(R3_6.T * Rot_ee_symbol)
-R3_6_sym = R3_6_sym.subs({'r': roll, 'p': pitch, 'y': yaw})
-print(np.matrix(R3_6_sym[1,1]))
-R0_3 = R0_3.evalf(subs={q1: theta1, q2: theta2, q3: theta3})
-R3_6 = R0_3.inv("LU") * Rot_ee
-print(np.matrix(R3_6[1,1]))
+T3_6 = T3_4 * T4_5 * T5_6<br>
+R3_6 = T3_6[0:3, 0:3]<br>
+R3_6_sym = simplify(R3_6.T * Rot_ee_symbol)<br>
+R3_6_sym = R3_6_sym.subs({'r': roll, 'p': pitch, 'y': yaw})<br>
+print(np.matrix(R3_6_sym[1,1]))<br>
+R0_3 = R0_3.evalf(subs={q1: theta1, q2: theta2, q3: theta3})<br>
+R3_6 = R0_3.inv("LU") * Rot_ee<br>
+print(np.matrix(R3_6[1,1]))<br>
 
 Yields the equation:
 
@@ -100,11 +100,11 @@ The final equations in python are:
 
 theta4 = atan2(R3_6[2, 2], -R3_6[0, 2])<br>
 theta5 = atan2(sqrt(R3_6[0, 2] * R3_6[0, 2] + R3_6[2, 2] * R3_6[2, 2]), R3_6[1, 2])<br>
-theta6 = atan2(-R3_6[1, 1], R3_6[1, 0])
+theta6 = atan2(-R3_6[1, 1], R3_6[1, 0])<br>
 
 ### Project Implementation
 
-#### 1. To complete the project I filled in the `IK_server.py` file with the forward and inverse kinematic code we implemented in the IK_debug.py python code for calculating Inverse Kinematics based on previously performed Kinematic Analysis. The code has been shown to guide the robot to successfully complete 8/10 pick and place cycles.   
+#### 1. To complete the project I filled in the `IK_server.py` file with the forward and inverse kinematic code we implemented in the IK_debug.py python code for calculating Inverse Kinematics based on previously performed Kinematic Analysis. The code has been shown to guide the robot to successfully complete at least 8/10 pick and place cycles.   
 
 
 
