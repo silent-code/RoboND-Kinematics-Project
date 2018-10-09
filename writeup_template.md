@@ -1,5 +1,5 @@
 ## Project: Kinematics Pick & Place
-This projected demonstrated that we could do math from the 1980s.
+This project demonstrated that we could do math from the 1980s.
 
 [//]: # (Image References)
 
