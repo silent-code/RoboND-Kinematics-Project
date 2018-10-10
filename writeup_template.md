@@ -4,6 +4,7 @@
 [image2]: ./misc_images/kuka_arm_annotated.png
 [image3]: ./misc_images/rse_proj2_eqtns1.png
 [image4]: ./misc_images/rse_proj2_eqtns2.png
+[image5]: ./misc_images/kuka_8of10.png
 
 ## Project: Kinematics Pick & Place
 The Kinematics Pick and Place project introduced python-based programming within the Robotic Operating System (ROS) environment and the use of the Kuka KR210 serial manipulator simulator to demonstrate basic forward and inverse kinematic concepts. The next image is a screen capture of the simulation during the actual testing stage of the project, showing the robotic manipulator successfully placing the object into the target bin.
@@ -104,9 +105,9 @@ theta6 = atan2(-R3_6[1, 1], R3_6[1, 0])<br>
 
 ### Project Implementation
 
-#### 1. To complete the project I filled in the `IK_server.py` file with the forward and inverse kinematic code we implemented in the IK_debug.py python code for calculating Inverse Kinematics based on previously performed Kinematic Analysis. The code has been shown to guide the robot to successfully complete at least 8/10 pick and place cycles.   
+#### 1. To complete the project I filled in the `IK_server.py` file with the forward and inverse kinematic code we implemented in the IK_debug.py python code for calculating Inverse Kinematics based on previously performed Kinematic Analysis. The code has been shown to guide the robot to successfully complete at least 8/10 pick and place cycles. The final image is a screen cap showing the successful placement of the 8 objects in the bin.   
 
 
 
-
+![alt text][image5]
 
