@@ -105,7 +105,7 @@ theta6 = atan2(-R3_6[1, 1], R3_6[1, 0])<br>
 
 ### Project Implementation
 
-#### 1. To complete the project I filled in the `IK_server.py` file with the forward and inverse kinematic code we implemented in the IK_debug.py python code for calculating Inverse Kinematics based on previously performed Kinematic Analysis. The code has been shown to guide the robot to successfully complete at least 8/10 pick and place cycles. The final image is a screen cap showing the successful placement of the 8 objects in the bin.   
+#### 1. To complete the project I filled in the `IK_server.py` file with the forward and inverse kinematic code we implemented in the IK_debug.py python code for calculating Inverse Kinematics based on previously performed Kinematic Analysis. The code has been shown to guide the robot to successfully complete at least 8/10 pick and place cycles. The final image is a screen cap showing the successful placement of the 8 objects in the bin and the two failed attempts on the shelf. The final standing object on the shelf is simply the 11th attempt at reset which wasn't used.   
 
 
 
