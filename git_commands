@@ -1,5 +1,5 @@
-To setup you own RoboND repo on Github:
--Assumes you've already cloned their project repo to local repo
+To setup your own repo of a repo you've already cloned on Github:
+-Assumes you've already cloned the new repo to local repo
 
 1) Create new github repo in your Github account - don't create readmes, etc
 2) Execute following commands in the local repo project directory:
